@@ -41,6 +41,9 @@ export interface ConfigInterface {
     url: string;
     apiKey: string;
   };
+  googleAuth: {
+    clientId: string;
+  };
   agentResponseTime: number;
   youverify: {
     baseUrl: string;

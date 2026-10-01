@@ -3,6 +3,8 @@ import { Request, Response } from 'express';
 import {
   userLoginSchema,
   UserLoginInput,
+  googleLoginSchema,
+  GoogleLoginInput,
   forgotPasswordSchema,
   ForgotPasswordInput,
   resetPasswordSchema,
@@ -63,6 +65,39 @@ export default class AuthController {
     const { AuthService } = this;
 
     const data = await AuthService.loginUser(req.body as UserLoginInput, UserType.PARTNER);
+
+    ResponseTransformer.success({ res, data });
+  }
+
+  @POST()
+  @route('/admin-google-login')
+  @before([validate(googleLoginSchema)])
+  async adminGoogleLogin(req: Request, res: Response) {
+    const { AuthService } = this;
+
+    const data = await AuthService.googleLogin(req.body as GoogleLoginInput, UserType.ADMINISTRATOR);
+
+    ResponseTransformer.success({ res, data });
+  }
+
+  @POST()
+  @route('/business-google-login')
+  @before([validate(googleLoginSchema)])
+  async businessGoogleLogin(req: Request, res: Response) {
+    const { AuthService } = this;
+
+    const data = await AuthService.googleLogin(req.body as GoogleLoginInput, UserType.BUSINESS);
+
+    ResponseTransformer.success({ res, data });
+  }
+
+  @POST()
+  @route('/partner-google-login')
+  @before([validate(googleLoginSchema)])
+  async partnerGoogleLogin(req: Request, res: Response) {
+    const { AuthService } = this;
+
+    const data = await AuthService.googleLogin(req.body as GoogleLoginInput, UserType.PARTNER);
 
     ResponseTransformer.success({ res, data });
   }

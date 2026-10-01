@@ -1,5 +1,7 @@
+import https from 'https';
 import {
   UserLoginInput,
+  GoogleLoginInput,
   ForgotPasswordInput,
   RefreshAccessTokenInput,
 } from '../schemas/auth.schema';
@@ -80,13 +82,7 @@ export default class AuthService {
   }
 
   async loginUser(payload: UserLoginInput, inputUserType?: string) {
-    const {
-      UserDataAccess,
-      BusinessDataAccess,
-      PartnerDataAccess,
-      AgentDataAccess,
-      AdminDataAccess,
-    } = this;
+    const { UserDataAccess } = this;
     const { email, password } = payload;
 
     const user = await UserDataAccess.findUserAuthByEmail(email?.toLowerCase());
@@ -102,6 +98,84 @@ export default class AuthService {
         code: 'INVALID_LOGIN_CREDENTIALS',
       });
     }
+
+    return this.completeLogin(user, inputUserType);
+  }
+
+  /**
+   * Sign in with Google. Only users who already have an account can sign in:
+   * the Google account's verified email must match an existing user of the
+   * dashboard's user type. No accounts are created here.
+   */
+  async googleLogin(payload: GoogleLoginInput, inputUserType?: string) {
+    const { UserDataAccess, config } = this;
+
+    const clientId: string = config.get('googleAuth.clientId');
+
+    if (!clientId) {
+      throw new BadRequestError('Google sign-in is not configured.', {
+        code: 'GOOGLE_SIGN_IN_NOT_CONFIGURED',
+      });
+    }
+
+    const tokenInfo = await this.fetchGoogleTokenInfo(payload.accessToken);
+
+    // The token must have been issued to our own Google client, must belong to a
+    // verified email address and must not be expired.
+    const issuedToUs = tokenInfo?.aud === clientId || tokenInfo?.azp === clientId;
+    const emailVerified = tokenInfo?.email_verified === 'true' || tokenInfo?.email_verified === true;
+    const notExpired = Number(tokenInfo?.expires_in) > 0;
+
+    if (!tokenInfo || !issuedToUs || !emailVerified || !notExpired || !tokenInfo.email) {
+      throw new AuthFailureError('Google sign-in failed. Please try again.', {
+        code: 'GOOGLE_TOKEN_INVALID',
+      });
+    }
+
+    const user = await UserDataAccess.findUserAuthByEmail(String(tokenInfo.email).toLowerCase());
+
+    if (!user) {
+      throw new AuthFailureError('No account found for this Google email address.', {
+        code: 'GOOGLE_ACCOUNT_NOT_FOUND',
+      });
+    }
+
+    return this.completeLogin(user, inputUserType);
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private fetchGoogleTokenInfo(accessToken: string): Promise<any> {
+    const url = `https://oauth2.googleapis.com/tokeninfo?access_token=${encodeURIComponent(accessToken)}`;
+
+    return new Promise((resolve) => {
+      const request = https.get(url, { timeout: 10000 }, (response) => {
+        let body = '';
+        response.on('data', (chunk) => {
+          body += chunk;
+        });
+        response.on('end', () => {
+          if (response.statusCode !== 200) return resolve(null);
+          try {
+            return resolve(JSON.parse(body));
+          } catch (error) {
+            return resolve(null);
+          }
+        });
+      });
+      request.on('timeout', () => request.destroy());
+      request.on('error', () => resolve(null));
+    });
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private async completeLogin(user: any, inputUserType?: string) {
+    const {
+      UserDataAccess,
+      BusinessDataAccess,
+      PartnerDataAccess,
+      AgentDataAccess,
+      AdminDataAccess,
+    } = this;
 
     if (user.userType !== inputUserType) {
       throw new AuthFailureError('You are not authorized to login to this dashboard.', {
