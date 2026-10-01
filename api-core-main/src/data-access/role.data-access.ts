@@ -40,6 +40,12 @@ export default class RoleDataAccess {
       .exec();
   }
 
+  async getRoleById(id: string) {
+    const { RoleModel, fillable } = this;
+
+    return RoleModel.findById(id).select(fillable).lean().exec();
+  }
+
   async getBusinessSuperAdminRole() {
     const { RoleModel, fillable } = this;
 

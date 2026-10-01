@@ -9,6 +9,7 @@ import {
   CreateDriverLicenseVerificationInput,
   createPayArenaOrderSchema,
   CreatePayArenaOrderInput,
+  fetchIdentityRealTimeSchema,
 } from '../schemas/identity.schema';
 import { validate } from '../middlewares/validate.middleware';
 import { walletEnquiry } from '../middlewares/wallet.enquiry.middleware';
@@ -91,5 +92,23 @@ export default class IdentityController {
     const data = await BusinessService.getPayArenaOrder(req.body as CreatePayArenaOrderInput);
 
     ResponseTransformer.success({ res, data });
+  }
+
+  @POST()
+  @route('/validate')
+  @before([validate(fetchIdentityRealTimeSchema)])
+  async fetchIdentityResponse(req: Request, res: Response) {
+    const { BusinessService } = this;
+
+    const data = await BusinessService.requestIdentity(req.body.type, req.body.id, 'NG');
+
+    ResponseTransformer.success({
+      res,
+      data: {
+        firstName: data?.firstName,
+        lastName: data?.lastName,
+        status: data?.status,
+      },
+    });
   }
 }

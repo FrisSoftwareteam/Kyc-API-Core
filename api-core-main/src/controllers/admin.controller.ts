@@ -44,7 +44,7 @@ import { BadRequestError } from '../errors/api.error';
 import { IAwilixAdminController } from '../types/containers/admin.container';
 
 @route('/admin')
-export default class AddressController {
+export default class AdminController {
   private readonly AdminService;
   private readonly BusinessService;
   private readonly RabbitMqService;

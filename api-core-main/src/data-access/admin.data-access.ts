@@ -121,6 +121,7 @@ export default class AdminDataAccess {
       user: id,
     })
       .select(fillable)
+      .populate('user')
       .lean()
       .exec();
   }

@@ -154,7 +154,7 @@ export default class UserDataAccess {
     const { UserModel } = this;
 
     return UserModel.findOne({
-      email,
+      email: email?.toLowerCase(),
     });
   }
 

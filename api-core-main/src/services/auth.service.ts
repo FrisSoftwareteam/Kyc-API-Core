@@ -89,7 +89,7 @@ export default class AuthService {
     } = this;
     const { email, password } = payload;
 
-    const user = await UserDataAccess.findUserAuthByEmail(email);
+    const user = await UserDataAccess.findUserAuthByEmail(email?.toLowerCase());
 
     if (!user) {
       throw new AuthFailureError('Invalid email or password.', {

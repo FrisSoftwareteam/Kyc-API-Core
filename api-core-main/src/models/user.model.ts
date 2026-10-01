@@ -34,7 +34,7 @@ const UserSchema = new Schema<IUser>(
     firstName: { type: String, required: true },
     middleName: { type: String, required: false },
     lastName: { type: String, required: true },
-    email: { type: String, unique: true, required: true },
+    email: { type: String, unique: true, required: true, lowercase: true },
     phoneNumber: {
       countryCode: { type: String, required: true },
       number: { type: String, required: true, unique: true },

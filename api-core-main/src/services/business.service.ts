@@ -430,7 +430,7 @@ export default class BusinessService {
   }
 
   async invite(payload: InviteBusinessInput): Promise<string> {
-    const { BusinessDataAccess, NotificationProvider, config } = this;
+    const { BusinessDataAccess, NotificationProvider, IdentityProvider, config } = this;
 
     const {
       businessName: name,
@@ -443,6 +443,14 @@ export default class BusinessService {
     } = payload;
 
     const { verificationToken, expiryTime } = getVerificationCodeAndExpiry(60);
+
+    await IdentityProvider.setVerificationType('nin');
+    // verify nin
+    const response = await IdentityProvider.fetchNin(directorNin, 'NG');
+
+    if (!response?.status) {
+      throw new BadRequestError('Invalid Director NIN');
+    }
 
     await BusinessDataAccess.inviteBusiness(
       {
@@ -1593,6 +1601,7 @@ export default class BusinessService {
           addressStreet: record.addressStreet,
           addressCity: record.addressCity,
           addressState: record.addressState,
+          tat: record?.tat,
         });
         continue;
       }

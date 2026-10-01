@@ -7,7 +7,7 @@ export const configData: ConfigInterface = {
   port: Number(process.env.APP_PORT) || 5510,
   isDev: process.env.APP_ENV !== 'production' ? true : false,
   db: {
-    url: <string>process.env.DATABASE_URI || 'postgresql://localhost:5432/kyc_db',
+    url: <string>process.env.DATABASE_URI || '',
     connectTimeout: Number(process.env.DATABASE_CONNECT_TIMEOUT) || 30000,
     maxConnections: Number(process.env.DATABASE_MAXIMUM_CONNECTIONS) || 1,
     minPoolSize: Number(process.env.DATABASE_MIN_POOL_SIZE) || 1,

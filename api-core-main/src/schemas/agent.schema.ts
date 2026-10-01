@@ -239,6 +239,9 @@ export type UpdateDisplayPictureInput = TypeOf<typeof updateDisplayImageSchema>[
 
 export const createPartnerAgentSchema = object({
   body: object({
+    nin: string({
+      required_error: 'NIN is required',
+    }).trim(),
     partner: string({
       required_error: 'Partner is required',
     }).trim(),
