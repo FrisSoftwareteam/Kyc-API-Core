@@ -13,6 +13,7 @@ const AgentSchema = new Schema<IAgent>(
     eventId: { type: String, required: false },
     state: { type: String, required: false },
     imageUrl: { type: String, required: false, default: AGENT_DEFAULT_IMAGE_URL },
+    nin: { type: String, required: true },
     wallet: {
       outstandingPayment: { type: Number, required: false, default: 0 },
       withdrawableAmount: { type: Number, required: false, default: 0 },

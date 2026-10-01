@@ -3,9 +3,9 @@ import { initializeApp, ServiceAccount, cert } from 'firebase-admin/app';
 import { getMessaging } from 'firebase-admin/messaging';
 import logger from '../core/Logger';
 
-// import firebaseAccountCredentials from '../privatekeys/firebase.json';
+import firebaseAccountCredentials from '../privatekeys/firebase.json';
 
-// const serviceAccount = firebaseAccountCredentials as ServiceAccount;
+const serviceAccount = firebaseAccountCredentials as ServiceAccount;
 export interface ISendNotificationRequest {
   notification: {
     title: string;
@@ -17,9 +17,9 @@ export interface ISendNotificationRequest {
   };
 }
 
-// initializeApp({
-//   credential: cert(serviceAccount),
-// });
+initializeApp({
+  credential: cert(serviceAccount),
+});
 
 export const sendFcmPushNotfication = async (payload: ISendNotificationRequest) => {
   try {

@@ -55,6 +55,7 @@ export default class AgentService {
   private readonly AgentDataAccess;
   private readonly PaystackProvider;
   private readonly AddressDataAccess;
+  private readonly IdentityProvider;
   private readonly PartnerDataAccess;
   private readonly NotificationProvider;
   private readonly AgentTransactionDataAccess;
@@ -67,6 +68,7 @@ export default class AgentService {
     UserDataAccess,
     AgentDataAccess,
     PaystackProvider,
+    IdentityProvider,
     AddressDataAccess,
     PartnerDataAccess,
     NotificationProvider,
@@ -79,6 +81,7 @@ export default class AgentService {
     this.TaskDataAccess = TaskDataAccess;
     this.AgentDataAccess = AgentDataAccess;
     this.PaystackProvider = PaystackProvider;
+    this.IdentityProvider = IdentityProvider;
     this.PartnerDataAccess = PartnerDataAccess;
     this.AddressDataAccess = AddressDataAccess;
     this.NotificationProvider = NotificationProvider;
@@ -126,7 +129,14 @@ export default class AgentService {
   }
 
   async createPartnerAgent(payload: CreatePartnerAgentInput): Promise<string> {
-    const { PartnerDataAccess, NotificationProvider } = this;
+    const { PartnerDataAccess, NotificationProvider, IdentityProvider } = this;
+
+    await IdentityProvider.setVerificationType('nin');
+    const response = await IdentityProvider.fetchNin(payload.nin, 'NG');
+
+    if (!response?.status) {
+      throw new BadRequestError('Invalid Agent NIN');
+    }
 
     const partner = await PartnerDataAccess.findPartnerById(payload.partner);
 

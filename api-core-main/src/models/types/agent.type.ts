@@ -21,6 +21,7 @@ export interface IAgent {
   eventId: string;
   imageUrl: string;
   state: string;
+  nin: string;
   wallet: {
     outstandingPayment?: number;
     withdrawableAmount?: number;

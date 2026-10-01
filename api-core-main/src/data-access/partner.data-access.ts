@@ -222,10 +222,19 @@ export default class PartnerDataAccess {
         { session },
       );
 
+      const agentByNin = await AgentModel.findOne({ nin: payload.nin });
+
+      if (agentByNin) {
+        throw new BadRequestError('Agent with same nin exists', {
+          code: 'AGENT_NIN_EXISTS',
+        });
+      }
+
       const agent = await AgentModel.create(
         [
           {
             user: user[0]._id,
+            nin: payload.nin,
             partner: payload.partner,
             state: payload.state,
             status: AgentStatus.ACTIVE,

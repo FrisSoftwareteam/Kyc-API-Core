@@ -1562,7 +1562,7 @@ export default class AdminService {
     const emailContent = await submitOtherTaskResponse({
       url: `${config.get(
         'frontend.adminUrl',
-      )}/verifications/submit/${verification?._id?.toString()}`,
+      )}/verifier-dashboard?verifierId=${verification?._id?.toString()}`,
     });
 
     await NotificationProvider.email.send({

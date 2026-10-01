@@ -100,6 +100,17 @@ export const createBvnVerificationSchema = object({
   }),
 });
 
+export const fetchIdentityRealTimeSchema = object({
+  body: object({
+    id: string({
+      required_error: 'ID Number is required',
+    }).trim(),
+    type: string({
+      required_error: 'ID Type is required',
+    }).trim(),
+  }),
+});
+
 export type CreateBvnVerificationInput = TypeOf<typeof createBvnVerificationSchema>['body'];
 
 export const createNinVerificationSchema = object({

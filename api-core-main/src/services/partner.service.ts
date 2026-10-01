@@ -52,6 +52,7 @@ export default class PartnerService {
   private readonly UserDataAccess;
   private readonly TaskDataAccess;
   private readonly AgentDataAccess;
+  private readonly IdentityProvider;
   private readonly InviteDataAccess;
   private readonly PaystackProvider;
   private readonly PartnerDataAccess;
@@ -70,6 +71,7 @@ export default class PartnerService {
     TaskDataAccess,
     AgentDataAccess,
     InviteDataAccess,
+    IdentityProvider,
     PaystackProvider,
     PartnerDataAccess,
     AddressDataAccess,
@@ -86,6 +88,7 @@ export default class PartnerService {
     this.TaskDataAccess = TaskDataAccess;
     this.AgentDataAccess = AgentDataAccess;
     this.InviteDataAccess = InviteDataAccess;
+    this.IdentityProvider = IdentityProvider;
     this.PaystackProvider = PaystackProvider;
     this.PartnerDataAccess = PartnerDataAccess;
     this.AddressDataAccess = AddressDataAccess;
@@ -143,7 +146,7 @@ export default class PartnerService {
   }
 
   async invite(payload: InvitePartnerInput) {
-    const { PartnerDataAccess, NotificationProvider, config } = this;
+    const { PartnerDataAccess, NotificationProvider, IdentityProvider, config } = this;
 
     const {
       partnerName: name,
@@ -158,6 +161,14 @@ export default class PartnerService {
     } = payload;
 
     const { verificationToken, expiryTime } = getVerificationCodeAndExpiry(60);
+
+    await IdentityProvider.setVerificationType('nin');
+    // verify nin
+    const response = await IdentityProvider.fetchNin(directorNin, 'NG');
+
+    if (!response?.status) {
+      throw new BadRequestError('Invalid Director NIN');
+    }
 
     const data = await PartnerDataAccess.invitePartner(
       {

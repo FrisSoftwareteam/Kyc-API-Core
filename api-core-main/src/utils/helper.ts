@@ -59,39 +59,67 @@ export const generateUniqueReference = (prefix?: string) => {
 };
 
 export const distanceBetweenPoints = (
-  latitude1: number,
-  longitude1: number,
-  latitude2: number,
-  longitude2: number,
-  unit: string,
+  lat1: number,
+  lon1: number,
+  lat2: number,
+  lon2: number,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  unit: 'K' | 'M' = 'K',
 ): number => {
-  if (latitude1 == latitude2 && longitude1 == longitude2) {
+  if (lat1 === undefined || lon1 === undefined || lat2 === undefined || lon2 === undefined) {
     return 0;
-  } else {
-    const radiusLatitude1 = (Math.PI * latitude1) / 180;
-    const radiusLatitude2 = (Math.PI * latitude2) / 180;
-    const theta = longitude1 - longitude2;
-    const radiusTheta = (Math.PI * theta) / 180;
-    let distance =
-      Math.sin(radiusLatitude1) * Math.sin(radiusLatitude2) +
-      Math.cos(radiusLatitude1) * Math.cos(radiusLatitude2) * Math.cos(radiusTheta);
-    if (distance > 1) {
-      distance = 1;
-    }
-    distance = Math.acos(distance);
-    distance = (distance * 180) / Math.PI;
-    distance = distance * 60 * 1.1515;
-
-    if (unit.toLowerCase() === 'k') {
-      distance = distance * 1.609344;
-    }
-    if (unit.toLowerCase() === 'm') {
-      distance = distance * 1609.344;
-    }
-    if (unit.toLowerCase() === 'n') {
-      distance = distance * 0.8684;
-    }
-
-    return distance;
   }
+
+  const toRad = (deg: number) => deg * (Math.PI / 180);
+
+  const R = 6371; // km
+
+  const dLat = toRad(lat2 - lat1);
+  const dLon = toRad(lon2 - lon1);
+
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
+
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  return R * c * 1000; // meters
 };
+
+// export const distanceBetweenPoints = (
+//   latitude1: number,
+//   longitude1: number,
+//   latitude2: number,
+//   longitude2: number,
+//   unit: string,
+// ): number => {
+//   if (latitude1 == latitude2 && longitude1 == longitude2) {
+//     return 0;
+//   } else {
+//     const radiusLatitude1 = (Math.PI * latitude1) / 180;
+//     const radiusLatitude2 = (Math.PI * latitude2) / 180;
+//     const theta = longitude1 - longitude2;
+//     const radiusTheta = (Math.PI * theta) / 180;
+//     let distance =
+//       Math.sin(radiusLatitude1) * Math.sin(radiusLatitude2) +
+//       Math.cos(radiusLatitude1) * Math.cos(radiusLatitude2) * Math.cos(radiusTheta);
+//     if (distance > 1) {
+//       distance = 1;
+//     }
+//     distance = Math.acos(distance);
+//     distance = (distance * 180) / Math.PI;
+//     distance = distance * 60 * 1.1515;
+//
+//     if (unit.toLowerCase() === 'k') {
+//       distance = distance * 1.609344;
+//     }
+//     if (unit.toLowerCase() === 'm') {
+//       distance = distance * 1609.344;
+//     }
+//     if (unit.toLowerCase() === 'n') {
+//       distance = distance * 0.8684;
+//     }
+//
+//     return distance;
+//   }
+// };

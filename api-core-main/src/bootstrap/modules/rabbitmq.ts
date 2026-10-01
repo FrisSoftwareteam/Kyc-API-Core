@@ -89,7 +89,6 @@ export default async (container: AwilixContainer) => {
       logger.info(`rabbitMq connected to ${name}.`);
       return connection;
     } catch (error) {
-      console.log({ error });
       if (currentRetry > maxRetries) {
         logger.error(`rabbitMq could not connect to ${name}, max retry count exceeded.`, {
           connectionName: name,
