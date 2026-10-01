@@ -1,0 +1,35 @@
+import Partner from '../partner.model';
+import Task from '../task.model';
+
+export enum PaymentProviderEnum {
+  PAYSTACK = 'paystack',
+  WALLET = 'wallet',
+}
+
+export enum PaymentStatusEnum {
+  PENDING = 'pending',
+  SUCCESSFUL = 'successful',
+  FAILED = 'failed',
+  REVERSED = 'reversed',
+  RETRACTED = 'retracted',
+}
+
+export enum PaymentTypeEnum {
+  PAYMENT = 'payment',
+  WITHDRAWAL = 'withdrawal',
+}
+
+export interface IPartnerTransaction {
+  provider: PaymentProviderEnum;
+  partner: typeof Partner;
+  task: typeof Task;
+  amount: number;
+  status: PaymentStatusEnum;
+  type: PaymentTypeEnum;
+  transferCode: string;
+  reference: string;
+  sessionId: string;
+  accountNumber: string;
+  bankName: string;
+  paidAt: Date;
+}
