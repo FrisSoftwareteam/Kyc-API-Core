@@ -14,6 +14,16 @@ export const userLoginSchema = object({
 
 export type UserLoginInput = TypeOf<typeof userLoginSchema>['body'];
 
+export const googleLoginSchema = object({
+  body: object({
+    accessToken: string({
+      required_error: 'Google access token is required',
+    }).trim(),
+  }),
+});
+
+export type GoogleLoginInput = TypeOf<typeof googleLoginSchema>['body'];
+
 export const forgotPasswordSchema = object({
   body: object({
     email: string({

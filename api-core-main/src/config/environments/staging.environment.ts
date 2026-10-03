@@ -62,6 +62,9 @@ export const configData: ConfigInterface = {
     url: <string>process.env.GOOGLE_MAP_BASE_URL,
     apiKey: <string>process.env.GOOGLE_MAP_API_KEY,
   },
+  googleAuth: {
+    clientId: <string>process.env.GOOGLE_OAUTH_CLIENT_ID || '',
+  },
   agentResponseTime: 30000,
   youverify: {
     baseUrl: <string>process.env.YOUVERIFY_BASE_URL,
